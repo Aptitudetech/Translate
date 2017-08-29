@@ -21,3 +21,13 @@ def get_translations( d ):
 def on_document_onload(doc, handler=None):
     if not doc.get('__islocal'):
         doc.get('__onload').translations = get_translations( doc.as_dict() )
+
+
+def on_app_after_install():
+    if not frappe.db.exists('Role', 'Translator'):
+        doc = frappe.new_doc('Translator').update({
+            'role_name': 'Translator',
+            'desk_access': 1
+        })
+        doc.flags.ignore_permissions = True
+        doc.insert()

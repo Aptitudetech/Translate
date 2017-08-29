@@ -57,6 +57,8 @@ app_include_js = "/assets/translate/js/translate.js"
 # before_install = "translate.install.before_install"
 # after_install = "translate.install.after_install"
 
+after_install = "translate.events.on_app_after_install"
+
 # Desk Notifications
 # ------------------
 # See frappe.core.notifications.get_notification_config
