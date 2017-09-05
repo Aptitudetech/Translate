@@ -7,7 +7,7 @@ frappe.ui.form.Control.prototype.refresh = function(){
 
     if (!value
         || !frappe.user.has_role('Translator')
-        || !in_list( ['Data', 'Select', 'Text', 'Small Text', 'Text Editor', 'Link', 'Dynamic Link'], this.df.fieldtype )) return;
+        || !in_list( ['Data', 'Select', 'Text', 'Small Text', 'Text Editor'], this.df.fieldtype )) return;
 
     if (!$('.clearfix .btn-open', this.$wrapper).length){
         var me = this;
@@ -56,16 +56,42 @@ frappe.ui.form.TranslationEditor = Class.extend({
             {label: __('Translation'), fieldtype: 'Section Break'},
             {label: __('Language'), fieldname: 'target_language', fieldtype: 'Select', options: frappe.get_languages(), reqd: 1, default: this.target_language},
             {fieldtype: 'Column Break'},
-            {label: __('Text'), fieldname: 'target_text', fieldtype: 'Small Text', reqd: 1, options: 'No Translate'}
+            {label: __('Text'), fieldname: 'target_text', fieldtype: 'Small Text', reqd: 1, options: 'No Translate'},
+            { label: __('Existing Translations'), fieldtype: 'Section Break' },
+            { fieldtype: 'HTML', fieldname: 'translations' }
         ];
         return fields;
     },
     prepare: function(){
-        var me = this;
+        var me = this,
+            doc = this.doc,
+            terms = (doc.__onload||{}).translations || {};
         ['source_language', 'source_text'].forEach(function(field){
             me.dialog.fields_dict[field].refresh();
             me.dialog.fields_dict[field].$input.attr('disabled', 'disabled');
         });
+
+        $(format(
+            '<table class="table table-condensed table-bordered">\
+                <thead>\
+                    <tr>\
+                        <th>{0}</th>\
+                        <th>{1}</th>\
+                        <th>{2}</th>\
+                    </tr>\
+                </thead>\
+                <tbody>\
+                </tbody>\
+            </table>', [ __('Term'), __('Language'), __('Translation') ])).appendTo(
+                me.dialog.translations.$wrapper
+            );
+
+        
+
+        for (var term in terms){
+            
+        }
+
     },
     translate_action: function(){
         var values = this.dialog.get_values(), me = this;

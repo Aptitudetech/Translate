@@ -5,6 +5,8 @@ from __future__ import unicode_literals
 import frappe
 
 def get_translations( d ):
+    '''Fetch all available translations from the database based on the active document'''
+
     ret = {}
     for value in d.values():
         if isinstance( d, list ):
