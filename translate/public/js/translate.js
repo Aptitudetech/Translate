@@ -72,6 +72,8 @@ frappe.ui.form.TranslationEditor = Class.extend({
             me.dialog.fields_dict[field].$input.attr('disabled', 'disabled');
         });
 
+        me.dialog.translations.refresh();
+
         $(format(
             '<table class="table table-condensed table-bordered">\
                 <thead>\
