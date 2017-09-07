@@ -94,7 +94,7 @@ frappe.ui.form.TranslationEditor = Class.extend({
 
     },
     translate_action: function(){
-        var values = this.dialog.get_values(), me = this;
+        var args = this.dialog.get_values(), me = this;
         frappe.call({
             'method': 'frappe.client.insert',
             'args': {
