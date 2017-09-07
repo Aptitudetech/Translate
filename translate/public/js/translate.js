@@ -20,7 +20,8 @@ frappe.ui.form.Control.prototype.refresh = function(){
                     df: me.df,
                     source_language: frappe.defaults.get_user_default("language"),
                     source_text: me.get_value(),
-                    target_language: me.doc.language
+                    target_language: me.doc.language,
+                    doc: me.doc
                 });
             }
         });
