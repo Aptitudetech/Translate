@@ -10,9 +10,10 @@ frappe.ui.form.Control.prototype.refresh = function(){
         || !in_list( ['Data', 'Select', 'Text', 'Small Text', 'Text Editor'], this.df.fieldtype )) return;
 
     if (!$('.clearfix .btn-open', this.$wrapper).length){
-        var me = this;
+        var me = this, 
+            translated = (this.doc && this.doc.__onload && this.doc.__onload.translations && this.doc.__onload.translations[value]);
         $(format('<a class="btn-open no-decoration text-muted" title="{0}">\
-            <i class="fa fa-globe"></i></a>', [__("Open Translation")])
+            <i class="fa fa-globe {1}"></i></a>', [__("Open Translation"), (translated) ? "text-warning": ""])
         ).appendTo(this.$wrapper.find('.clearfix'));
         this.$wrapper.find('.btn-open').on('click', function(){
             if (!me.doc.__islocal){
@@ -50,14 +51,14 @@ frappe.ui.form.TranslationEditor = Class.extend({
     },
     get_fields: function(){
         var fields = [
-            {label: __('Source'), fieldtype: 'Section Break', collapsible: 1},
-            {label: __('Language'), fieldname: 'source_language', fieldtype: 'Select', options: frappe.get_languages(), default: this.source_language, reqd: 1 },
+            {label: __('Languages'), fieldtype: 'Section Break'},
+            {label: __('Source'), fieldname: 'source_language', fieldtype: 'Select', options: frappe.get_languages(), default: this.source_language, reqd: 1 },
             {fieldtype: 'Column Break'},
-            {label: __('Source Text'), fieldname: 'source_text', fieldtype: 'Small Text', reqd: 1, default: this.source_text, options: 'No Translate'},
+            {label: __('Target'), fieldname: 'target_language', fieldtype: 'Select', options: frappe.get_languages(), reqd: 1, default: this.target_language},
             {label: __('Translation'), fieldtype: 'Section Break'},
-            {label: __('Language'), fieldname: 'target_language', fieldtype: 'Select', options: frappe.get_languages(), reqd: 1, default: this.target_language},
+            {label: __('Source'), fieldname: 'source_text', fieldtype: 'Small Text', reqd: 1, default: this.source_text, options: 'No Translate'},
             {fieldtype: 'Column Break'},
-            {label: __('Text'), fieldname: 'target_text', fieldtype: 'Small Text', reqd: 1, options: 'No Translate'},
+            {label: __('Translation'), fieldname: 'target_text', fieldtype: 'Small Text', reqd: 1, options: 'No Translate'},
             { label: __('Existing Translations'), fieldtype: 'Section Break' },
             { fieldtype: 'HTML', fieldname: 'translations' }
         ];
@@ -88,28 +89,40 @@ frappe.ui.form.TranslationEditor = Class.extend({
             </table>', [ __('Term'), __('Language'), __('Translation') ])).appendTo(
                 me.dialog.fields_dict.translations.$wrapper
             );
-
-        
-
+        var tbody = me.dialog.fields_dict.translations.$wrapper.find('tbody');
         for (var term in terms){
-            
+            for ( var lang in terms[term] ){
+                $(format(
+                    '<tr data-name="{0}"><td>{1}</td><td>{2}</td><td>{3}</td></tr>',
+                    [ terms[term][lang]['name'], term, lang, terms[term][lang]['target_name'] ]
+                )).appendTo(tbody);
+            }
         }
 
     },
     translate_action: function(){
+        debugger;
         var args = this.dialog.get_values(), me = this;
+        if (args.source_language === args.target_language){
+            frappe.msgprint(format(__("Nothing to translate from {0} to {1}"), 
+            [args.source_language, args.target_language]));
+            return;
+        }
         frappe.call({
             'method': 'frappe.client.insert',
             'args': {
-                'doctype': 'Translation',
-                'language': args.target_language,
-                'source_name': args.source_text,
-                'target_name': args.target_text
+                "doc": {
+                    'doctype': 'Translation',
+                    'language': args.target_language,
+                    'source_name': args.source_text,
+                    'target_name': args.target_text
+                }
             },
             callback: function(res){
                 if (!res.exc){
                     me.dialog.hide();
                     frappe.msgprint(__('Translation Added Successfull!'));
+                    cur_frm.reload_doc();
                 }
             }
         });
