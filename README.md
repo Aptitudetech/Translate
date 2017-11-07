@@ -12,6 +12,7 @@ This modification add content translation at the field Level for the following t
 * Small Text
 * Text Editor
 * Select
+
 For example, it enables translation of "Item Name" and "Description" of an Item.  Also, and equally important, translation of Standard Reply, Blog and Web Pages is supported .  All translations are stored in the Translation DocType of ERPNext.  The accessibility of this feature is controlled by a Role named Translator.  Only users with this role can access and modify translations.
 The modification also add the possibility to enable / disable languages within ERPNext.  This help to narrow the choice of translations offered to users to only those who are needed within the context of the company.
 By nature, translations cannot be accessed within a dialog window.
